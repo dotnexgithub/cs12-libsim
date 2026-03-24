@@ -1,9 +1,19 @@
 package org.hiram;
 
-public class Book {
-    public String hi;
+import java.time.LocalDate;
 
-    public Book(String hi) {
-        this.hi = hi;
+public class Book {
+    String author, genre, title, publisher, language;
+    int ISBN;
+    LocalDate publicationDate;
+    public Book(
+            String author
+            , String genre
+            , String title
+            , String publisher
+            , String langauge
+            , int ISBN
+            , LocalDate publicationDate) {
+
     }
 }
