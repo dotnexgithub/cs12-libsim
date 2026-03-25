@@ -1,43 +1,68 @@
 package org.hiram.forms;
 
+import org.hiram.Book;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.SpinnerNumberModel;
 import java.awt.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.io.Console;
 
 public class Management extends JFrame {
     private JPanel managementPanel;
+
+    // Tabs
     private JPanel simulationTabPanel;
     private JPanel booksTabPanel;
+    private JPanel initializeTabPanel;
 
     // Panels that are actually supposed to store data
     private JPanel childCurrentActionsPanel;
     private JPanel childBooksPanel;
 
     private JButton addActionButton;
-    private JSpinner durationSpinner;
+
+    // Spinner
+    private SpinnerNumberModel sm = new SpinnerNumberModel(1, 1, 1000, 1); // used for
+    private JSpinner durationSpinner; //                                                             min max values
+
     private JButton addBookButton;
     private JTabbedPane tabbedPane1;
     private JComboBox pausePerComboBox;
+    private JButton importJSONButton;
 
-    public Management() {
+    public Management(List<Book> books) {
         $$$setupUI$$$();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(managementPanel);
         pack();
-        addBookButton.addActionListener(e -> {
-            JPanel newRow = createBookEntry();
+
+        // Populate Books tab with default books
+        for (Book book : books) {
+            JPanel newRow = createBookEntry(book);
             childBooksPanel.add(newRow);
             childBooksPanel.revalidate();
             childBooksPanel.repaint();
-        });
+        }
+//        addBookButton.addActionListener(e -> {
+//            JPanel newRow = createBookEntry();
+//            childBooksPanel.add(newRow);
+//            childBooksPanel.revalidate();
+//            childBooksPanel.repaint();
+//        });
         setVisible(true);
     }
 
-    private JPanel createBookEntry() {
+    private JPanel createBookEntry(Book book) {
         JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         JTextField inputField = new JTextField(20);
-        JTextArea testTextArea = new JTextArea("Title: \nGenre: \nSigned out: 12/31/1969    Due return: 12/31/1969", 3, 1);
+        JLabel bookTitleLabel = new JLabel(book.title);
+        JTextArea testTextArea = new JTextArea(book.title + "\n" + book.author + "\n" + book.publicationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 3, 1);
         JButton removeButton = new JButton("X");
 
         removeButton.addActionListener(e -> {
@@ -45,7 +70,8 @@ public class Management extends JFrame {
             childBooksPanel.revalidate();
             childBooksPanel.repaint();
         });
-        rowPanel.add(new JLabel("Book"));
+        rowPanel.add(new JLabel(book.title));
+
         rowPanel.add(testTextArea);
         rowPanel.add(inputField);
         rowPanel.add(removeButton);
@@ -59,6 +85,7 @@ public class Management extends JFrame {
         // TODO: place custom component creation code here
         // figure out wtf this means
         childBooksPanel = new JPanel();
+        durationSpinner = new JSpinner(sm);
         childBooksPanel.setLayout(new BoxLayout(childBooksPanel, BoxLayout.Y_AXIS));
     }
 
@@ -83,7 +110,6 @@ public class Management extends JFrame {
         simulationTabPanel = new JPanel();
         simulationTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(4, 6, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Simulation", simulationTabPanel);
-        durationSpinner = new JSpinner();
         simulationTabPanel.add(durationSpinner, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane2 = new JScrollPane();
         simulationTabPanel.add(scrollPane2, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 6, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -105,15 +131,23 @@ public class Management extends JFrame {
         label3.setText("Pause per");
         simulationTabPanel.add(label3, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         booksTabPanel = new JPanel();
-        booksTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        booksTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Books", booksTabPanel);
         final JScrollPane scrollPane3 = new JScrollPane();
-        booksTabPanel.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        booksTabPanel.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         scrollPane3.setBorder(BorderFactory.createTitledBorder(null, "Books", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         scrollPane3.setViewportView(childBooksPanel);
         addBookButton = new JButton();
         addBookButton.setText("Add Book");
-        booksTabPanel.add(addBookButton, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        booksTabPanel.add(addBookButton, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
+        booksTabPanel.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        importJSONButton = new JButton();
+        importJSONButton.setText("Import JSON");
+        booksTabPanel.add(importJSONButton, new com.intellij.uiDesigner.core.GridConstraints(1, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        initializeTabPanel = new JPanel();
+        initializeTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane1.addTab("Initialize", initializeTabPanel);
         label3.setLabelFor(pausePerComboBox);
     }
 
