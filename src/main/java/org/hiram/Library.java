@@ -4,16 +4,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.hiram.Rand;
 
 public class Library {
-    public List<Book> books;
-    public List<Book> availableBooks;
-    public List<Member> members;
-    public List<Member> loaningMembers;
-    public List<Loan> loans;
+    public List<Book> books = new ArrayList<Book>();
+    public List<Book> availableBooks = new ArrayList<Book>();
+    public List<Member> members = new ArrayList<Member>();
+    public List<Loan> loans = new ArrayList<Loan>();
 
-    // Adaptive field
+    // Action specific variables updated depending on the actions done
     public Member focusedMember;
+    public Loan focusedLoan;
+    public Book focusedBorrowedBook;
+
+    // Class errorlevel for determining if action could have been done
+    public int errorLevel;
     public Library() {
     }
 
@@ -30,34 +35,102 @@ public class Library {
         this.loans = new ArrayList<>(Arrays.asList(loan));
     }
 
-    public void updateLoaningMembers() {
-        this.loaningMembers = loans.stream().map(Loan::getLoaningMembers).toList();
-    }
+//    public void updateLoaningMembers() {
+//        this.loaningMembers = loans.stream().map(Loan::getLoaningMembers).toList();
+//    }
 
+    private Member getAnyRandomMember() {
+        return members.get(Rand.randomInt(0, members.size()));
+    }
     private Book getRandomAvailableBook() {
         List<Book> availableBooks = new ArrayList<>(books);
         for (Book book : books) {
             if (book.quantity == 0) availableBooks.remove(book);
         }
-        Book randomBook = availableBooks.get(randInt(0, availableBooks.size()));
+        if (availableBooks.isEmpty()) {
+            return null;
+        }
+        Book randomBook = availableBooks.get(Rand.randomInt(0, availableBooks.size()));
         randomBook.quantity -= 1;
         return randomBook;
     }
 
-    private Member getRandomAvailableMember() {
-        List<Member> availableMembers = new ArrayList<Member>(members);
-        availableMembers.remove(loaningMembers);
-        return availableMembers.get(randInt(0, availableMembers.size()));
+//    // returns null if none found
+//    private Member getRandomAvailableMember() {
+//        List<Member> availableMembers = new ArrayList<Member>(members);
+//        availableMembers.remove(loaningMembers);
+//        if (availableMembers.isEmpty()) {
+//            return null;
+//        }
+//        return availableMembers.get(Rand.randomInt(0, availableMembers.size()));
+//    }
+
+    // returns null if none found
+    private Loan getRandomLoan() {
+        if (loans.isEmpty()) {
+            return null;
+        }
+        return loans.get(Rand.randomInt(0, loans.size()));
     }
-    // Actions that need the library to change
+
+//    private void addFocusedMemberAsLoaning() {
+//        for (Member member : loaningMembers) {
+//            if (member.id == focusedMember.id) {
+//                return;
+//            }
+//        loaningMembers.add(focusedMember);
+//        }
+//    }
+
+    private Loan getFocusedMemberLoan() {
+        // use a for loop to see if any loans have members that have matching IDs with focusedMember
+        for (Loan loan : loans) {
+            if (loan.member.id == focusedMember.id) return loan;
+        }
+        return null;
+    }
+
+    // ALL ACTIONS THAT PATRONS CAN DO
+    // Actions that need the library to change, any member can visit (assumption)
     public void randomMemberVisited() {
-        this.focusedMember = getRandomAvailableMember();
+        focusedMember = getAnyRandomMember();
+        errorLevel = 0;
+
     }
-    public Loan randomMemberLoans() {
-        this.focusedMember = getRandomAvailableMember();
-        loans.add(new Loan(focusedMember, LocalDate.now(), LocalDate.now(), getRandomAvailableBook()));
-        return ;
+
+    public void randomMemberLoans() {
+        focusedMember = getAnyRandomMember();
+        Book randomBook = getRandomAvailableBook();
+        // use codes/errorlevels to determine if a member can still loan a book
+        if (focusedMember == null || randomBook == null) {
+            errorLevel = -1;
+            return;
+        }
+
+        Loan tempLoan = new Loan(focusedMember, LocalDate.now(), LocalDate.now(), getRandomAvailableBook());
+        loans.add(tempLoan);
+        errorLevel = 0;
+
     }
+
+    public void randomBookReturn() {
+        focusedLoan = getRandomLoan();
+        if (focusedLoan == null) {
+            errorLevel = -1;
+            return;
+        }
+        focusedMember = focusedLoan.member;
+        // use codes/errorlevels to determine if a member can still loan
+        errorLevel = 0;
+        loans.remove(focusedLoan);
+    }
+
+    // Assumes that anyone can use the washroom
+    public void randomMemberWashroom() {
+        focusedMember = getAnyRandomMember();
+        errorLevel = 0;
+    }
+
 
 
     // Actions
