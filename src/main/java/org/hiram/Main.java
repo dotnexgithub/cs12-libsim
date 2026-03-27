@@ -7,6 +7,7 @@ import org.hiram.forms.Borrower;
 import org.hiram.forms.Example;
 import org.hiram.forms.Management;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class Main
         Library library = new Library();
 
         // Populate fields of library
-        Book testBook = new Book("Gabriel Licup", "Horror", "Java", "CS12", "English", 4864295693956945L, LocalDate.now(), 2);
+        Book testBook = new Book("Gabriel Licup", "Horror", "Java", "CS12", "English", 4864295693956945L, LocalDate.now(), 22);
         Book testBook2 = new Book("Gabriel Licup", "Horror", "Another one", "CS12", "English", 4864295693956945L, LocalDate.now(), 5);
 
         // Populate members
@@ -39,42 +40,7 @@ public class Main
 
         // simulation
         // days
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Day " + (i + 1));
-            for (int x = 0; x < 10; x++) {
-                int randomAction = Rand.randomInt(0, 3);
-                switch (randomAction) {
-                    case 0:
-                        library.randomMemberVisited();
-                        System.out.println(library.focusedMember.name + " visited!");
-                        break;
-                    case 1:
-                        library.randomMemberLoans();
-                        if (library.errorLevel != 0) {
-                            library.randomBookReturn();
-                            System.out.println(library.focusedMember + " returned book");
-                            break;
-                        }
-                        System.out.println(library.focusedMember.name + " loaned book");
 
-                        break;
-                    case 2:
-                        library.randomBookReturn();
-                        if (library.errorLevel != 0) {
-                            library.randomMemberLoans();
-                            System.out.println(library.focusedMember.name + " loaned book");
-
-                            break;
-                        }
-                        System.out.println(library.focusedMember.name + " returned book");
-                        break;
-                    case 3:
-                        library.randomMemberWashroom();
-                        System.out.println(library.focusedMember.name + " used the washroom!");
-                        break;
-                }
-            }
-        }
         // Tests
         List<Book> books = new ArrayList<Book>();
 
@@ -86,6 +52,62 @@ public class Main
             public void run() {
                 Management manager = new Management(library);
                 manager.setVisible(true);
+                for (int i = 0; i < 10; i++) {
+                    String day = "Day " + (i + 1);
+                    SwingUtilities.invokeLater(() -> {
+                        manager.appendOutput("Day " + day + " =============");
+                    });
+                    for (int x = 0; x < 10; x++) {
+
+                        int randomAction = Rand.randomInt(0, 3);
+                        switch (randomAction) {
+                            case 0:
+                                library.randomMemberVisited();
+                                String visitMessage = library.focusedMember.name + " visited!";
+                                SwingUtilities.invokeLater(() -> {
+                                    manager.appendOutput(visitMessage);
+                                });
+                                break;
+                            case 1:
+                                library.randomMemberLoans();
+
+                                if (library.errorLevel != 0) {
+
+                                    library.randomBookReturn();
+                                    String returnedMessage1 = library.focusedMember + " returned book";
+                                    SwingUtilities.invokeLater(() -> {
+                                    manager.appendOutput(returnedMessage1);
+                                    });
+                                    break;
+                                }
+                                String loanedMessage1 = library.focusedMember.name + " loaned book";
+
+                                SwingUtilities.invokeLater(() -> {
+                                    manager.appendOutput(loanedMessage1);
+                                });
+                                break;
+                            case 2:
+                                library.randomBookReturn();
+                                if (library.errorLevel != 0) {
+                                    library.randomMemberLoans();
+                                    String loanedMessage2 = library.focusedMember.name + " loaned book";
+                                    SwingUtilities.invokeLater(() -> {
+                                        manager.appendOutput(loanedMessage2);
+                                    });
+                                    break;
+                                }
+                                String returnedMessage2 = library.focusedMember.name + " returned book";
+
+                                System.out.println(returnedMessage2);
+                                break;
+                            case 3:
+                                library.randomMemberWashroom();
+                                String washroomMessage = library.focusedMember.name + " used the washroom!";
+                                System.out.println(washroomMessage);
+                                break;
+                        }
+                    }
+                }
             }
         });
     }

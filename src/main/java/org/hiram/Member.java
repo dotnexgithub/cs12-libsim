@@ -1,9 +1,9 @@
 package org.hiram;
 
 public class Member {
-    Book book;
-    String name;
-    int age, id;
+    public Book book;
+    public String name;
+    public int age, id;
 
     public Member(String name, int age, int id) {
         this.name = name;

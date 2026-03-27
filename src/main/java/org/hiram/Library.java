@@ -16,6 +16,7 @@ public class Library {
     public Member focusedMember;
     public Loan focusedLoan;
     public Book focusedBorrowedBook;
+    public String lastAction;
 
     // Class errorlevel for determining if action could have been done
     public int errorLevel;
@@ -95,6 +96,7 @@ public class Library {
     public void randomMemberVisited() {
         focusedMember = getAnyRandomMember();
         errorLevel = 0;
+        lastAction = "Visit";
 
     }
 
@@ -107,9 +109,11 @@ public class Library {
             return;
         }
 
-        Loan tempLoan = new Loan(focusedMember, LocalDate.now(), LocalDate.now(), getRandomAvailableBook());
+        Loan tempLoan = new Loan(focusedMember, LocalDate.now(), LocalDate.now(), randomBook);
         loans.add(tempLoan);
         errorLevel = 0;
+        lastAction = "Loan";
+
 
     }
 
@@ -122,13 +126,18 @@ public class Library {
         focusedMember = focusedLoan.member;
         // use codes/errorlevels to determine if a member can still loan
         errorLevel = 0;
+        focusedLoan.book.quantity += 1;
         loans.remove(focusedLoan);
+        lastAction = "Return";
+
     }
 
     // Assumes that anyone can use the washroom
     public void randomMemberWashroom() {
         focusedMember = getAnyRandomMember();
         errorLevel = 0;
+        lastAction = "Washroom";
+
     }
 
 
