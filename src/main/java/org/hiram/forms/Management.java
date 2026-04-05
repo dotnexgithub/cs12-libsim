@@ -3,16 +3,13 @@ package org.hiram.forms;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.hiram.Actions;
 import org.hiram.Book;
 import org.hiram.Library;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import java.awt.*;
 
 import java.time.format.DateTimeFormatter;
@@ -33,24 +30,23 @@ public class Management extends JFrame {
     private SpinnerNumberModel sm = new SpinnerNumberModel(1, 1, 1000, 1); // used for
     private JSpinner durationSpinner; //                                                             min max values
 
-    private JButton addBookButton;
     private JTabbedPane tabbedPane1;
     private JComboBox pausePerComboBox;
     private JPanel membersTabPanel;
-    private JButton addMemberButton;
     private JButton importMembersButton;
     private JPanel childMembersPanel;
-    private JPanel childSummaryInitializePanel;
+    private JPanel childActionsInitializePanel;
     private JPanel childResultsInitializePanel;
     private JPanel initializeControlsPanel;
-    private JButton button1;
-    private JButton button2;
+    public JButton startSimulationButton;
+    public JButton nextDayButton;
     private JButton button3;
     private JCheckBox checkBox1;
     private JCheckBox checkBox2;
     private JCheckBox checkBox3;
     private JCheckBox checkBox5;
     private JTextArea resultsInitializeTextArea;
+    private JScrollPane actionsInitializeScrollPane;
 
     public Management(Library library) {
         $$$setupUI$$$();
@@ -65,12 +61,6 @@ public class Management extends JFrame {
             childBooksPanel.revalidate();
             childBooksPanel.repaint();
         }
-//        addBookButton.addActionListener(e -> {
-//            JPanel newRow = createBookEntry();
-//            childBooksPanel.add(newRow);
-//            childBooksPanel.revalidate();
-//            childBooksPanel.repaint();
-//        });
         setVisible(true);
     }
 
@@ -78,6 +68,61 @@ public class Management extends JFrame {
         resultsInitializeTextArea.append(text + "\n");
     }
 
+    public void actionHandler(Actions action, Library library) {
+        // Sets messages and calls entry maker depending on action
+        switch (action) {
+            case VISIT:
+                addActionEntry("Visited", Color.GREEN, "Member " + library.focusedMember.name + " visited!");
+                break;
+            case LOAN:
+                addActionEntry("Loaned", Color.RED, "Member " + library.focusedMember.name + " loaned the book " + library.focusedLoan.book.title);
+                break;
+            case RETURN:
+                addActionEntry("Returned", Color.BLUE, "Member " + library.focusedMember.name + " returned the book " + library.focusedLoan.book.title);
+                break;
+            case WASHROOM:
+                addActionEntry("Booboo", Color.ORANGE, "Member " + library.focusedMember.name + " used the washroom.");
+                break;
+        }
+    }
+
+    private void addActionEntry(String heading, Color headingColour, String body) {
+        JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JLabel headingLabel = new JLabel(heading);
+        headingLabel.setForeground(headingColour);
+
+        JTextArea testTextArea = new JTextArea(body, 3, 1);
+
+        rowPanel.add(headingLabel);
+        rowPanel.add(testTextArea);
+
+        // Constrain height for BoxLayout
+        rowPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+        childActionsInitializePanel.add(rowPanel);
+        childActionsInitializePanel.revalidate();
+        childActionsInitializePanel.repaint();
+        // Bring scroll pane to bottom of page as action is added
+        SwingUtilities.invokeLater(() -> snapToBottom(actionsInitializeScrollPane));
+
+    }
+
+
+    public void addDayLabel(int day) {
+        JPanel dayHeaderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel dayLabel = new JLabel("Day " + day);
+        dayLabel.setFont(new Font(dayLabel.getFont().getName(), Font.BOLD, 15));
+        dayHeaderPanel.add(dayLabel);
+        childActionsInitializePanel.add(dayHeaderPanel);
+        // Bring scroll pane to bottom of page as action is added
+        SwingUtilities.invokeLater(() -> snapToBottom(actionsInitializeScrollPane));
+    }
+
+    private void snapToBottom(JScrollPane pane) {
+        JScrollBar vertical = pane.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
+    }
 
     private JPanel createBookEntry(Book book) {
         JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -105,10 +150,17 @@ public class Management extends JFrame {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        // figure out wtf this means
+        // Initialize custom components
         childBooksPanel = new JPanel();
+        childActionsInitializePanel = new JPanel();
+        actionsInitializeScrollPane = new JScrollPane();
+
+        // Spinner used to limit ranges
         durationSpinner = new JSpinner(sm);
+
+        // Set layouts to prevent NullPointerExceptions
         childBooksPanel.setLayout(new BoxLayout(childBooksPanel, BoxLayout.Y_AXIS));
+        childActionsInitializePanel.setLayout(new BoxLayout(childActionsInitializePanel, BoxLayout.Y_AXIS));
     }
 
     /**
@@ -201,15 +253,12 @@ public class Management extends JFrame {
         label7.setText("Pause per");
         simulationTabPanel.add(label7, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         booksTabPanel = new JPanel();
-        booksTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+        booksTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Books", booksTabPanel);
         final JScrollPane scrollPane3 = new JScrollPane();
         booksTabPanel.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         scrollPane3.setBorder(BorderFactory.createTitledBorder(null, "Books", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         scrollPane3.setViewportView(childBooksPanel);
-        addBookButton = new JButton();
-        addBookButton.setText("Add Book");
-        booksTabPanel.add(addBookButton, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         membersTabPanel = new JPanel();
         membersTabPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Members", membersTabPanel);
@@ -221,9 +270,6 @@ public class Management extends JFrame {
         childMembersPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         scrollPane4.setViewportView(childMembersPanel);
         childMembersPanel.setBorder(BorderFactory.createTitledBorder(null, "Members", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        addMemberButton = new JButton();
-        addMemberButton.setText("Add Member");
-        membersTabPanel.add(addMemberButton, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importMembersButton = new JButton();
         importMembersButton.setText("Import Members");
         membersTabPanel.add(importMembersButton, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -234,29 +280,27 @@ public class Management extends JFrame {
         initializeTabPanel.add(spacer7, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final com.intellij.uiDesigner.core.Spacer spacer8 = new com.intellij.uiDesigner.core.Spacer();
         initializeTabPanel.add(spacer8, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        initializeTabPanel.add(actionsInitializeScrollPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, 300), null, 0, false));
+        actionsInitializeScrollPane.setViewportView(childActionsInitializePanel);
+        childActionsInitializePanel.setBorder(BorderFactory.createTitledBorder(null, "vb", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final JScrollPane scrollPane5 = new JScrollPane();
-        initializeTabPanel.add(scrollPane5, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        childSummaryInitializePanel = new JPanel();
-        childSummaryInitializePanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        scrollPane5.setViewportView(childSummaryInitializePanel);
-        final JScrollPane scrollPane6 = new JScrollPane();
-        initializeTabPanel.add(scrollPane6, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        initializeTabPanel.add(scrollPane5, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         childResultsInitializePanel = new JPanel();
         childResultsInitializePanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        scrollPane6.setViewportView(childResultsInitializePanel);
-        final JScrollPane scrollPane7 = new JScrollPane();
-        childResultsInitializePanel.add(scrollPane7, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        scrollPane5.setViewportView(childResultsInitializePanel);
+        final JScrollPane scrollPane6 = new JScrollPane();
+        childResultsInitializePanel.add(scrollPane6, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         resultsInitializeTextArea = new JTextArea();
-        scrollPane7.setViewportView(resultsInitializeTextArea);
+        scrollPane6.setViewportView(resultsInitializeTextArea);
         initializeControlsPanel = new JPanel();
         initializeControlsPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         initializeTabPanel.add(initializeControlsPanel, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        button1 = new JButton();
-        button1.setText("Button");
-        initializeControlsPanel.add(button1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        button2 = new JButton();
-        button2.setText("Button");
-        initializeControlsPanel.add(button2, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        startSimulationButton = new JButton();
+        startSimulationButton.setText("Start Simulation");
+        initializeControlsPanel.add(startSimulationButton, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        nextDayButton = new JButton();
+        nextDayButton.setText("Next Day");
+        initializeControlsPanel.add(nextDayButton, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         button3 = new JButton();
         button3.setText("Button");
         initializeControlsPanel.add(button3, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

@@ -3,9 +3,9 @@ package org.hiram;
 import java.time.LocalDate;
 
 public class Loan {
-    Member member;
-    LocalDate borrowedDate, dueDate;
-    Book book; // see if you can make this a list instead to that patrons can borrow multiple books
+    public Member member;
+    public LocalDate borrowedDate, dueDate;
+    public Book book; // see if you can make this a list instead to that patrons can borrow multiple books
 
     public Loan(Member member, LocalDate borrowedDate, LocalDate dueDate, Book book) {
         this.member = member;

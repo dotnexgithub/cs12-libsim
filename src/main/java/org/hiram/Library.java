@@ -15,7 +15,7 @@ public class Library {
     // Action specific variables updated depending on the actions done
     public Member focusedMember;
     public Loan focusedLoan;
-    public Book focusedBorrowedBook;
+    public Book focusedBook;
     public String lastAction;
 
     // Class errorlevel for determining if action could have been done
@@ -32,14 +32,6 @@ public class Library {
         this.members = new ArrayList<>(Arrays.asList(member));
     }
 
-    public void populateLoans(Loan... loan) {
-        this.loans = new ArrayList<>(Arrays.asList(loan));
-    }
-
-//    public void updateLoaningMembers() {
-//        this.loaningMembers = loans.stream().map(Loan::getLoaningMembers).toList();
-//    }
-
     private Member getAnyRandomMember() {
         return members.get(Rand.randomInt(0, members.size()));
     }
@@ -52,36 +44,19 @@ public class Library {
             return null;
         }
         Book randomBook = availableBooks.get(Rand.randomInt(0, availableBooks.size()));
-        randomBook.quantity -= 1;
+        // refer back to original books list to update qty
+        int bookIndex = books.indexOf(randomBook);
+        books.get(bookIndex).quantity -= 1;
+        System.out.print(randomBook.title + " was picked and has new qty " + randomBook.quantity);
         return randomBook;
     }
 
-//    // returns null if none found
-//    private Member getRandomAvailableMember() {
-//        List<Member> availableMembers = new ArrayList<Member>(members);
-//        availableMembers.remove(loaningMembers);
-//        if (availableMembers.isEmpty()) {
-//            return null;
-//        }
-//        return availableMembers.get(Rand.randomInt(0, availableMembers.size()));
-//    }
-
-    // returns null if none found
     private Loan getRandomLoan() {
         if (loans.isEmpty()) {
             return null;
         }
         return loans.get(Rand.randomInt(0, loans.size()));
     }
-
-//    private void addFocusedMemberAsLoaning() {
-//        for (Member member : loaningMembers) {
-//            if (member.id == focusedMember.id) {
-//                return;
-//            }
-//        loaningMembers.add(focusedMember);
-//        }
-//    }
 
     private Loan getFocusedMemberLoan() {
         // use a for loop to see if any loans have members that have matching IDs with focusedMember
@@ -110,6 +85,7 @@ public class Library {
         }
 
         Loan tempLoan = new Loan(focusedMember, LocalDate.now(), LocalDate.now(), randomBook);
+        focusedLoan = tempLoan;
         loans.add(tempLoan);
         errorLevel = 0;
         lastAction = "Loan";
@@ -137,25 +113,6 @@ public class Library {
         focusedMember = getAnyRandomMember();
         errorLevel = 0;
         lastAction = "Washroom";
-
-    }
-
-
-
-    // Actions
-//    private void checkAvailableMembers(List<Member> members) {
-//        borrowing
-//        for (Member member : members) {
-//            if this.
-//        }
-//    }
-
-//    public void randomMemberLoan() {
-//        // Create a temp list that
-//        Member member = this.availableMembers.get(randInt(0, this.availableMembers.size()));
-//        this.availableMembers.remove(member);
-//    }
-    public void runSimulation() { // take arguments later
 
     }
 }
