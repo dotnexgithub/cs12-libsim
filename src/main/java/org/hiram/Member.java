@@ -1,7 +1,6 @@
 package org.hiram;
 
 public class Member {
-    public Book book;
     public String name;
     public int age, id;
 

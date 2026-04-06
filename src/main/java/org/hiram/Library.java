@@ -16,7 +16,14 @@ public class Library {
     public Member focusedMember;
     public Loan focusedLoan;
     public Book focusedBook;
-    public String lastAction;
+    public Actions lastAction;
+
+
+    // Statistics variables
+    public int numberOfVisits;
+    public int numberOfLoans;
+    public int numberOfReturns;
+    public int numberOfWashroomUses;
 
     // Class errorlevel for determining if action could have been done
     public int errorLevel;
@@ -47,7 +54,6 @@ public class Library {
         // refer back to original books list to update qty
         int bookIndex = books.indexOf(randomBook);
         books.get(bookIndex).quantity -= 1;
-        System.out.print(randomBook.title + " was picked and has new qty " + randomBook.quantity);
         return randomBook;
     }
 
@@ -71,7 +77,8 @@ public class Library {
     public void randomMemberVisited() {
         focusedMember = getAnyRandomMember();
         errorLevel = 0;
-        lastAction = "Visit";
+        numberOfVisits += 1;
+        lastAction = Actions.VISIT;
 
     }
 
@@ -88,7 +95,8 @@ public class Library {
         focusedLoan = tempLoan;
         loans.add(tempLoan);
         errorLevel = 0;
-        lastAction = "Loan";
+        numberOfLoans += 1;
+        lastAction = Actions.LOAN;
 
 
     }
@@ -101,18 +109,20 @@ public class Library {
         }
         focusedMember = focusedLoan.member;
         // use codes/errorlevels to determine if a member can still loan
+        loans.remove(focusedLoan);
         errorLevel = 0;
         focusedLoan.book.quantity += 1;
-        loans.remove(focusedLoan);
-        lastAction = "Return";
+        numberOfReturns += 1;
+        lastAction = Actions.RETURN;
 
     }
 
     // Assumes that anyone can use the washroom
     public void randomMemberWashroom() {
         focusedMember = getAnyRandomMember();
+        numberOfWashroomUses += 1;
         errorLevel = 0;
-        lastAction = "Washroom";
+        lastAction = Actions.WASHROOM;
 
     }
 }
