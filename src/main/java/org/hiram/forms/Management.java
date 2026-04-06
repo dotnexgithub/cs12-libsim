@@ -28,9 +28,10 @@ public class Management extends JFrame {
     private JPanel childBooksPanel;
 
     // Spinners
-    // SpinnerNumberModel used to set values, ranges, and steps for spinners
-    private SpinnerNumberModel durationSNM = new SpinnerNumberModel(1, 1, 1000, 1);
-    private SpinnerNumberModel actionsSNM = new SpinnerNumberModel(1, 1, 1000, 1);
+    // SpinnerNumberModel constructor used to set values, ranges, and steps for spinners
+    // (https://stackoverflow.com/a/15880988)
+    private final SpinnerNumberModel durationSNM = new SpinnerNumberModel(1, 1, 1000, 1);
+    private final SpinnerNumberModel actionsSNM = new SpinnerNumberModel(1, 1, 1000, 1);
     private JSpinner durationSpinner;
     private JSpinner actionsSpinner;
 
@@ -193,16 +194,20 @@ public class Management extends JFrame {
         // Sets messages and calls entry maker depending on action
         switch (action) {
             case VISIT:
-                addActionEntry("Visited", Color.decode("#D3EADA"), "Member " + library.focusedMember.name + " visited!");
+                addActionEntry("Visited", Color.decode("#D3EADA"), "Member " + library.focusedMember.name +
+                        " visited!");
                 break;
             case LOAN:
-                addActionEntry("Loaned", Color.decode("#FFA093"), "Member " + library.focusedMember.name + " loaned the book " + library.focusedLoan.book.title);
+                addActionEntry("Loaned", Color.decode("#FFA093"), "Member " + library.focusedMember.name +
+                        " loaned the book " + library.focusedLoan.book.title);
                 break;
             case RETURN:
-                addActionEntry("Returned", Color.decode("#A0CAEF"), "Member " + library.focusedMember.name + " returned the book " + library.focusedLoan.book.title);
+                addActionEntry("Returned", Color.decode("#A0CAEF"), "Member " + library.focusedMember.name +
+                        " returned the book " + library.focusedLoan.book.title);
                 break;
             case WASHROOM:
-                addActionEntry("Washroom", Color.decode("#EDDDC4"), "Member " + library.focusedMember.name + " used the washroom.");
+                addActionEntry("Washroom", Color.decode("#EDDDC4"), "Member " + library.focusedMember.name +
+                        " used the washroom.");
                 break;
         }
     }
@@ -210,28 +215,27 @@ public class Management extends JFrame {
 
     public void addDayLabel(int day) {
         JPanel dayHeaderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
         JLabel dayLabel = new JLabel("Day " + day);
         JLabel simulationCountLabel = new JLabel("(Simulation " + simulationCount + ")");
+
+        // Styling
         dayLabel.setFont(new Font(dayLabel.getFont().getName(), Font.BOLD, 15));
         simulationCountLabel.setFont(new Font(simulationCountLabel.getFont().getName(), Font.ITALIC, 11));
         simulationCountLabel.setForeground(Color.GRAY);
+
         dayHeaderPanel.add(dayLabel);
         dayHeaderPanel.add(simulationCountLabel);
+
         childActionsInitializePanel.add(dayHeaderPanel);
         // Bring scroll pane to bottom of page as action is added
         SwingUtilities.invokeLater(() -> snapToBottom(actionsInitializeScrollPane));
-    }
-
-    private void snapToBottom(JScrollPane pane) { // from https://stackoverflow.com/a/5150437
-        JScrollBar vertical = pane.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum());
     }
 
     private void addActionEntry(String heading, Color identifierColour, String body) {
         JPanel rowPanel = new JPanel();
 
         rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.Y_AXIS));
-
 
         JTextArea actionTextArea = new JTextArea(body, 3, 1);
         JLabel headingLabel = new JLabel(heading);
@@ -241,7 +245,7 @@ public class Management extends JFrame {
         rowPanel.add(headingLabel);
         rowPanel.add(actionTextArea);
 
-        // Set height
+        // Set height and margins (https://stackoverflow.com/a/5894750)
         rowPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
         rowPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
@@ -259,7 +263,10 @@ public class Management extends JFrame {
 
         JLabel bookTitleLabel = new JLabel(book.title);
 
-        JTextArea bookDetailsTextArea = new JTextArea("Author: " + book.author + "    Published on " + book.publicationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " by " + book.publisher + "    Genre: " + book.genre + "\n" + "Language: " + book.language + "    ISBN: " + book.ISBN + "\n" + "Quantity: " + book.quantity, 3, 1);
+        JTextArea bookDetailsTextArea = new JTextArea("Author: " + book.author + "    Published on " +
+                book.publicationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " by " + book.publisher +
+                "    Genre: " + book.genre + "\n" + "Language: " + book.language + "    ISBN: " + book.ISBN + "\n" +
+                "Quantity: " + book.quantity, 3, 1);
 
         // Alignment fixes
         bookTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -274,6 +281,11 @@ public class Management extends JFrame {
         bookEntryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
         return bookEntryPanel;
+    }
+
+    private void snapToBottom(JScrollPane pane) { // from https://stackoverflow.com/a/5150437
+        JScrollBar vertical = pane.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
     }
 
     private JPanel createMemberEntry(Member member) {
@@ -318,17 +330,15 @@ public class Management extends JFrame {
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
         // Initialize custom components
         childBooksPanel = new JPanel();
         childMembersPanel = new JPanel();
         childActionsInitializePanel = new JPanel();
         actionsInitializeScrollPane = new JScrollPane();
 
-        // SpinnerNumberModel variable `sm` used to limit ranges
+        // SpinnerNumberModel objects used to set ranges for spinners
         durationSpinner = new JSpinner(durationSNM);
         actionsSpinner = new JSpinner(actionsSNM);
-
 
         // Set layouts to prevent NullPointerExceptions
         childBooksPanel.setLayout(new BoxLayout(childBooksPanel, BoxLayout.Y_AXIS));

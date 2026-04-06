@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.hiram.Rand;
 
 public class Library {
     public List<Book> books = new ArrayList<Book>();
@@ -15,7 +14,6 @@ public class Library {
     // Action specific variables updated depending on the actions done
     public Member focusedMember;
     public Loan focusedLoan;
-    public Book focusedBook;
     public Actions lastAction;
 
 
@@ -25,8 +23,9 @@ public class Library {
     public int numberOfReturns;
     public int numberOfWashroomUses;
 
-    // Class errorlevel for determining if action could have been done
+    // errorLevel used to determine if a method executed expectedly (inspired by windows batch)
     public int errorLevel;
+
     public Library() {
     }
 
@@ -51,6 +50,7 @@ public class Library {
             return null;
         }
         Book randomBook = availableBooks.get(Rand.randomInt(0, availableBooks.size()));
+
         // refer back to original books list to update qty
         int bookIndex = books.indexOf(randomBook);
         books.get(bookIndex).quantity -= 1;
@@ -64,14 +64,6 @@ public class Library {
         return loans.get(Rand.randomInt(0, loans.size()));
     }
 
-    private Loan getFocusedMemberLoan() {
-        // use a for loop to see if any loans have members that have matching IDs with focusedMember
-        for (Loan loan : loans) {
-            if (loan.member.id == focusedMember.id) return loan;
-        }
-        return null;
-    }
-
     // ALL ACTIONS THAT PATRONS CAN DO
     // Actions that need the library to change, any member can visit (assumption)
     public void randomMemberVisited() {
@@ -79,9 +71,9 @@ public class Library {
         errorLevel = 0;
         numberOfVisits += 1;
         lastAction = Actions.VISIT;
-
     }
 
+    // A random member is selected to loan, errorLevel = -1 if no books are found
     public void randomMemberLoans() {
         focusedMember = getAnyRandomMember();
         Book randomBook = getRandomAvailableBook();
@@ -97,10 +89,9 @@ public class Library {
         errorLevel = 0;
         numberOfLoans += 1;
         lastAction = Actions.LOAN;
-
-
     }
 
+    // A random member is selected to return a book, errorLevel = -1 if no books are found
     public void randomBookReturn() {
         focusedLoan = getRandomLoan();
         if (focusedLoan == null) {
@@ -114,7 +105,6 @@ public class Library {
         focusedLoan.book.quantity += 1;
         numberOfReturns += 1;
         lastAction = Actions.RETURN;
-
     }
 
     // Assumes that anyone can use the washroom
@@ -123,6 +113,5 @@ public class Library {
         numberOfWashroomUses += 1;
         errorLevel = 0;
         lastAction = Actions.WASHROOM;
-
     }
 }
