@@ -1,5 +1,3 @@
-
-
 package org.hiram;
 
 import java.time.LocalDate;
@@ -26,56 +24,28 @@ public class Book {
         return author;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
     public String getGenre() {
         return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getPublisher() {
         return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
     }
 
     public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
     public long getISBN() {
         return ISBN;
     }
 
-    public void setISBN(long ISBN) {
-        this.ISBN = ISBN;
-    }
-
     public LocalDate getPublicationDate() {
         return publicationDate;
-    }
-
-    public void setPublicationDate(LocalDate publicationDate) {
-        this.publicationDate = publicationDate;
     }
 
     public int getQuantity() {

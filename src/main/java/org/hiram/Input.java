@@ -1,8 +1,10 @@
+package org.hiram;
+
 import java.util.Scanner;
 
 public class Input
 {
-    private static Scanner scn = new Scanner(System.in);
+    private static final Scanner scn = new Scanner(System.in);
 
     // private constructor, to prevent objects of type 'Input' from being created
     private Input() {}

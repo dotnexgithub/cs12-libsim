@@ -10,100 +10,43 @@ public class Library {
         return books;
     }
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
-
-    public List<Book> getAvailableBooks() {
-        return availableBooks;
-    }
-
-    public void setAvailableBooks(List<Book> availableBooks) {
-        this.availableBooks = availableBooks;
-    }
-
     public List<Member> getMembers() {
         return members;
-    }
-
-    public void setMembers(List<Member> members) {
-        this.members = members;
-    }
-
-    public List<Loan> getLoans() {
-        return loans;
-    }
-
-    public void setLoans(List<Loan> loans) {
-        this.loans = loans;
     }
 
     public Member getFocusedMember() {
         return focusedMember;
     }
 
-    public void setFocusedMember(Member focusedMember) {
-        this.focusedMember = focusedMember;
-    }
-
     public Loan getFocusedLoan() {
         return focusedLoan;
-    }
-
-    public void setFocusedLoan(Loan focusedLoan) {
-        this.focusedLoan = focusedLoan;
     }
 
     public Actions getLastAction() {
         return lastAction;
     }
 
-    public void setLastAction(Actions lastAction) {
-        this.lastAction = lastAction;
-    }
-
     public int getNumberOfVisits() {
         return numberOfVisits;
-    }
-
-    public void setNumberOfVisits(int numberOfVisits) {
-        this.numberOfVisits = numberOfVisits;
     }
 
     public int getNumberOfLoans() {
         return numberOfLoans;
     }
 
-    public void setNumberOfLoans(int numberOfLoans) {
-        this.numberOfLoans = numberOfLoans;
-    }
-
     public int getNumberOfReturns() {
         return numberOfReturns;
-    }
-
-    public void setNumberOfReturns(int numberOfReturns) {
-        this.numberOfReturns = numberOfReturns;
     }
 
     public int getNumberOfWashroomUses() {
         return numberOfWashroomUses;
     }
 
-    public void setNumberOfWashroomUses(int numberOfWashroomUses) {
-        this.numberOfWashroomUses = numberOfWashroomUses;
-    }
-
     public int getErrorLevel() {
         return errorLevel;
     }
 
-    public void setErrorLevel(int errorLevel) {
-        this.errorLevel = errorLevel;
-    }
-
     private List<Book> books = new ArrayList<Book>();
-    private List<Book> availableBooks = new ArrayList<Book>();
     private List<Member> members = new ArrayList<Member>();
     private List<Loan> loans = new ArrayList<Loan>();
 
@@ -127,7 +70,6 @@ public class Library {
 
     public void populateBooks(Book... book) {
         this.books = new ArrayList<>(Arrays.asList(book));
-        this.availableBooks = new ArrayList<>(Arrays.asList(book));
     }
 
     public void populateMembers(Member... member) {
@@ -137,6 +79,7 @@ public class Library {
     private Member getAnyRandomMember() {
         return members.get(Rand.randomInt(0, members.size()));
     }
+
     private Book getRandomAvailableBook() {
         List<Book> availableBooks = new ArrayList<>(books);
         for (Book book : books) {
