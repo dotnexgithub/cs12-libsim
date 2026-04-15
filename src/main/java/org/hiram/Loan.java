@@ -1,11 +1,13 @@
+
+
 package org.hiram;
 
 import java.time.LocalDate;
 
 public class Loan {
-    public Member member;
-    public LocalDate borrowedDate, dueDate;
-    public Book book;
+    private Member member;
+    private LocalDate borrowedDate, dueDate;
+    private Book book;
 
     public Loan(Member member, LocalDate borrowedDate, LocalDate dueDate, Book book) {
         this.member = member;
@@ -14,4 +16,36 @@ public class Loan {
         this.book = book;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public LocalDate getBorrowedDate() {
+        return borrowedDate;
+    }
+
+    public void setBorrowedDate(LocalDate borrowedDate) {
+        this.borrowedDate = borrowedDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
 }
+

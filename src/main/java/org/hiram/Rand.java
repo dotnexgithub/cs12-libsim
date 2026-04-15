@@ -36,17 +36,18 @@ public class Rand
 
         return rand.nextInt(maxExclusive - minInclusive) + minInclusive;
     }
+     /*
+    public static float randomFloat(float minInclusive, float maxExclusive)
+    {
+        Initialize();
 
-//    public static float randomFloat(float minInclusive, float maxExclusive)
-//    {
-//        Initialize();
-//
-//        if (maxExclusive - minInclusive <= 0)
-//        {
-//            System.out.println("Warning: maxExclusive must be greater than minInclusive in Rand.randomFloat(min, max).");
-//            return 0;
-//        }
-//
-//        return rand.nextFloat(maxExclusive - minInclusive) + minInclusive;
-//    }
+        if (maxExclusive - minInclusive <= 0)
+        {
+            System.out.println("Warning: maxExclusive must be greater than minInclusive in Rand.randomFloat(min, max).");
+            return 0;
+        }
+
+        return rand.nextFloat(maxExclusive - minInclusive) + minInclusive;
+    }
+    */
 }

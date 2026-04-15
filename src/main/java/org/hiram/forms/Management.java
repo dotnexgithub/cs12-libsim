@@ -41,7 +41,7 @@ public class Management extends JFrame {
     private JPanel childActionsInitializePanel;
     private JPanel childResultsInitializePanel;
     private JPanel initializeControlsPanel;
-    public JButton startSimulationButton;
+    private JButton startSimulationButton;
     private JCheckBox useWashroomCheckBox;
     private JScrollPane actionsInitializeScrollPane;
     private JTextArea statisticsTextArea;
@@ -52,7 +52,7 @@ public class Management extends JFrame {
     private JLabel numberMembersLabel;
 
     // Simulation variables
-    private Library library;
+    private final Library library;
     private static Timer simulationTimer;
     private static int currentDay = 1;
     private static int currentAction = 0;
@@ -72,16 +72,16 @@ public class Management extends JFrame {
         pack();
 
         // Populate Books tab with default books
-        for (Book book : library.books) {
+        for (Book book : library.getBooks()) {
             JPanel newRow = createBookEntry(book);
             childBooksPanel.add(newRow);
         }
-        numberBooksLabel.setText(library.books.size() + " books initialized");
-        for (Member member : library.members) {
+        numberBooksLabel.setText(library.getBooks().size() + " books initialized");
+        for (Member member : library.getMembers()) {
             JPanel newRow = createMemberEntry(member);
             childMembersPanel.add(newRow);
         }
-        numberMembersLabel.setText(library.members.size() + " members initialized");
+        numberMembersLabel.setText(library.getMembers().size() + " members initialized");
         runSimulation();
     }
 
@@ -144,9 +144,9 @@ public class Management extends JFrame {
                         break;
                     case 1:
                         library.randomMemberLoans();
-                        if (library.errorLevel != 0) {
+                        if (library.getErrorLevel() != 0) {
                             library.randomBookReturn();
-                            if (library.errorLevel == 0 && library.focusedLoan != null) {
+                            if (library.getErrorLevel() == 0 && library.getFocusedLoan() != null) {
                                 actionHandler(Actions.RETURN, library);
                             }
                         } else {
@@ -155,7 +155,7 @@ public class Management extends JFrame {
                         break;
                     case 2:
                         library.randomBookReturn();
-                        if (library.errorLevel != 0) {
+                        if (library.getErrorLevel() != 0) {
                             library.randomMemberLoans();
                             actionHandler(Actions.LOAN, library);
                             break;
@@ -194,19 +194,19 @@ public class Management extends JFrame {
         // Sets messages and calls entry maker depending on action
         switch (action) {
             case VISIT:
-                addActionEntry("Visited", Color.decode("#D3EADA"), "Member " + library.focusedMember.name +
+                addActionEntry("Visited", Color.decode("#D3EADA"), "Member " + library.getFocusedMember().getName() +
                         " visited!");
                 break;
             case LOAN:
-                addActionEntry("Loaned", Color.decode("#FFA093"), "Member " + library.focusedMember.name +
-                        " loaned the book " + library.focusedLoan.book.title);
+                addActionEntry("Loaned", Color.decode("#FFA093"), "Member " + library.getFocusedMember().getName() +
+                        " loaned the book " + library.getFocusedLoan().getBook().getTitle());
                 break;
             case RETURN:
-                addActionEntry("Returned", Color.decode("#A0CAEF"), "Member " + library.focusedMember.name +
-                        " returned the book " + library.focusedLoan.book.title);
+                addActionEntry("Returned", Color.decode("#A0CAEF"), "Member " + library.getFocusedMember().getName() +
+                        " returned the book " + library.getFocusedLoan().getBook().getTitle());
                 break;
             case WASHROOM:
-                addActionEntry("Washroom", Color.decode("#EDDDC4"), "Member " + library.focusedMember.name +
+                addActionEntry("Washroom", Color.decode("#EDDDC4"), "Member " + library.getFocusedMember().getName() +
                         " used the washroom.");
                 break;
         }
@@ -261,12 +261,12 @@ public class Management extends JFrame {
         bookEntryPanel.setLayout(new BoxLayout(bookEntryPanel, BoxLayout.Y_AXIS));
         bookEntryPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 15, 2));
 
-        JLabel bookTitleLabel = new JLabel(book.title);
+        JLabel bookTitleLabel = new JLabel(book.getTitle());
 
-        JTextArea bookDetailsTextArea = new JTextArea("Author: " + book.author + "    Published on " +
-                book.publicationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " by " + book.publisher +
-                "    Genre: " + book.genre + "\n" + "Language: " + book.language + "    ISBN: " + book.ISBN + "\n" +
-                "Quantity: " + book.quantity, 3, 1);
+        JTextArea bookDetailsTextArea = new JTextArea("Author: " + book.getAuthor() + "    Published on " +
+                book.getPublicationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " by " + book.getPublisher() +
+                "    Genre: " + book.getGenre() + "\n" + "Language: " + book.getLanguage() + "    ISBN: " + book.getISBN() + "\n" +
+                "Quantity: " + book.getQuantity(), 3, 1);
 
         // Alignment fixes
         bookTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -293,9 +293,9 @@ public class Management extends JFrame {
         memberEntryPanel.setLayout(new BoxLayout(memberEntryPanel, BoxLayout.Y_AXIS));
         memberEntryPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 15, 2));
 
-        JLabel nameLabel = new JLabel(member.name);
+        JLabel nameLabel = new JLabel(member.getName());
 
-        JTextArea memberDetailsTextArea = new JTextArea("Age: " + member.age + "    ID: " + member.id, 1, 1);
+        JTextArea memberDetailsTextArea = new JTextArea("Age: " + member.getAge() + "    ID: " + member.getId(), 1, 1);
 
         // Alignment fixes
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -314,19 +314,20 @@ public class Management extends JFrame {
 
     private void updateStatisticsPanels() {
         // Panel 1: Statistics
-        statisticsTextArea.setText("Visits: " + library.numberOfVisits + "\nLoans: " + library.numberOfLoans +
-                "\nReturns: " + library.numberOfReturns + "\nWashroom uses: " + library.numberOfWashroomUses);
+        statisticsTextArea.setText("Visits: " + library.getNumberOfVisits() + "\nLoans: " + library.getNumberOfLoans() +
+                "\nReturns: " + library.getNumberOfReturns() + "\nWashroom uses: " + library.getNumberOfWashroomUses());
+
         // Panel 2: Last action
-        lastActionStatisticsTextArea.setText("By " + library.focusedMember.name + " - Action " +
-                library.lastAction.toString());
+        lastActionStatisticsTextArea.setText("By " + library.getFocusedMember().getName() + " - Action " +
+                library.getLastAction().toString());
 
         // Panel 3: Last loaned
-        if (library.lastAction == Actions.LOAN) bookBorrowedStatisticsTextBox.setText("Book `" +
-                library.focusedLoan.book.title + "` borrowed by " + library.focusedLoan.member.name);
+        if (library.getLastAction() == Actions.LOAN) bookBorrowedStatisticsTextBox.setText("Book `" +
+                library.getFocusedLoan().getBook().getTitle() + "` borrowed by " + library.getFocusedMember().getName());
 
         // Panel 4: Last returned
-        if (library.lastAction == Actions.RETURN) bookReturnedStatisticsTextBox.setText("Book `" +
-                library.focusedLoan.book.title + "` returned by " + library.focusedLoan.member.name);
+        if (library.getLastAction() == Actions.RETURN) bookReturnedStatisticsTextBox.setText("Book `" +
+                library.getFocusedLoan().getBook().getTitle() + "` returned by " + library.getFocusedMember().getName());
     }
 
     private void createUIComponents() {

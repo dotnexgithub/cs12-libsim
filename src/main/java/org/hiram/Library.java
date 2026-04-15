@@ -6,25 +6,121 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Library {
-    public List<Book> books = new ArrayList<Book>();
-    public List<Book> availableBooks = new ArrayList<Book>();
-    public List<Member> members = new ArrayList<Member>();
-    public List<Loan> loans = new ArrayList<Loan>();
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public List<Book> getAvailableBooks() {
+        return availableBooks;
+    }
+
+    public void setAvailableBooks(List<Book> availableBooks) {
+        this.availableBooks = availableBooks;
+    }
+
+    public List<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Member> members) {
+        this.members = members;
+    }
+
+    public List<Loan> getLoans() {
+        return loans;
+    }
+
+    public void setLoans(List<Loan> loans) {
+        this.loans = loans;
+    }
+
+    public Member getFocusedMember() {
+        return focusedMember;
+    }
+
+    public void setFocusedMember(Member focusedMember) {
+        this.focusedMember = focusedMember;
+    }
+
+    public Loan getFocusedLoan() {
+        return focusedLoan;
+    }
+
+    public void setFocusedLoan(Loan focusedLoan) {
+        this.focusedLoan = focusedLoan;
+    }
+
+    public Actions getLastAction() {
+        return lastAction;
+    }
+
+    public void setLastAction(Actions lastAction) {
+        this.lastAction = lastAction;
+    }
+
+    public int getNumberOfVisits() {
+        return numberOfVisits;
+    }
+
+    public void setNumberOfVisits(int numberOfVisits) {
+        this.numberOfVisits = numberOfVisits;
+    }
+
+    public int getNumberOfLoans() {
+        return numberOfLoans;
+    }
+
+    public void setNumberOfLoans(int numberOfLoans) {
+        this.numberOfLoans = numberOfLoans;
+    }
+
+    public int getNumberOfReturns() {
+        return numberOfReturns;
+    }
+
+    public void setNumberOfReturns(int numberOfReturns) {
+        this.numberOfReturns = numberOfReturns;
+    }
+
+    public int getNumberOfWashroomUses() {
+        return numberOfWashroomUses;
+    }
+
+    public void setNumberOfWashroomUses(int numberOfWashroomUses) {
+        this.numberOfWashroomUses = numberOfWashroomUses;
+    }
+
+    public int getErrorLevel() {
+        return errorLevel;
+    }
+
+    public void setErrorLevel(int errorLevel) {
+        this.errorLevel = errorLevel;
+    }
+
+    private List<Book> books = new ArrayList<Book>();
+    private List<Book> availableBooks = new ArrayList<Book>();
+    private List<Member> members = new ArrayList<Member>();
+    private List<Loan> loans = new ArrayList<Loan>();
 
     // Action specific variables updated depending on the actions done
-    public Member focusedMember;
-    public Loan focusedLoan;
-    public Actions lastAction;
+    private Member focusedMember;
+    private Loan focusedLoan;
+    private Actions lastAction;
 
 
     // Statistics variables
-    public int numberOfVisits;
-    public int numberOfLoans;
-    public int numberOfReturns;
-    public int numberOfWashroomUses;
+    private int numberOfVisits;
+    private int numberOfLoans;
+    private int numberOfReturns;
+    private int numberOfWashroomUses;
 
     // errorLevel used to determine if a method executed expectedly (inspired by windows batch)
-    public int errorLevel;
+    private int errorLevel;
 
     public Library() {
     }
@@ -44,7 +140,7 @@ public class Library {
     private Book getRandomAvailableBook() {
         List<Book> availableBooks = new ArrayList<>(books);
         for (Book book : books) {
-            if (book.quantity == 0) availableBooks.remove(book);
+            if (book.getQuantity() == 0) availableBooks.remove(book);
         }
         if (availableBooks.isEmpty()) {
             return null;
@@ -53,7 +149,8 @@ public class Library {
 
         // refer back to original books list to update qty
         int bookIndex = books.indexOf(randomBook);
-        books.get(bookIndex).quantity -= 1;
+        Book originalBook = books.get(bookIndex);
+        originalBook.setQuantity(originalBook.getQuantity() - 1);
         return randomBook;
     }
 
@@ -98,11 +195,11 @@ public class Library {
             errorLevel = -1;
             return;
         }
-        focusedMember = focusedLoan.member;
+        focusedMember = focusedLoan.getMember();
         // use codes/errorlevels to determine if a member can still loan
         loans.remove(focusedLoan);
         errorLevel = 0;
-        focusedLoan.book.quantity += 1;
+        focusedLoan.getBook().setQuantity(focusedLoan.getBook().getQuantity() + 1);
         numberOfReturns += 1;
         lastAction = Actions.RETURN;
     }
@@ -115,3 +212,4 @@ public class Library {
         lastAction = Actions.WASHROOM;
     }
 }
+
