@@ -1,6 +1,6 @@
 # hiram
 
-A simple program that simulates member-library engagement. Unfortunately, this project has high coupling and is not a good example of encapsulation :(
+A simple program that simulates member-library engagement. This branch `revamped` aims to apply concepts of encapsulation.
 
 ## Running
 - Please run the resulting `.jar` file with `java -jar` and a supported runtime (version 60.0 or greater)
